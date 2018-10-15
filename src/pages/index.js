@@ -1,5 +1,4 @@
 import React from 'react'
-
 import Layout from '../components/layout'
 class IndexPage extends React.Component {
   constructor(props) {

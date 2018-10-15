@@ -1,51 +1,58 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Helmet from 'react-helmet'
-import { StaticQuery, graphql } from 'gatsby'
+import { Link } from 'gatsby'
+import { connect } from 'react-redux'
 
-import Header from './header'
-import './layout.css'
-
-const Layout = ({ children }) => (
-  <StaticQuery
-    query={graphql`
-      query SiteTitleQuery {
-        site {
-          siteMetadata {
-            title
-          }
-        }
-      }
-    `}
-    render={data => (
-      <>
-        <Helmet
-          title={data.site.siteMetadata.title}
-          meta={[
-            { name: 'description', content: 'Sample' },
-            { name: 'keywords', content: 'sample, something' },
-          ]}
-        >
-          <html lang="en" />
-        </Helmet>
-        <Header siteTitle={data.site.siteMetadata.title} />
-        <div
-          style={{
-            margin: '0 auto',
-            maxWidth: 960,
-            padding: '0px 1.0875rem 1.45rem',
-            paddingTop: 0,
-          }}
-        >
-          {children}
+const Counter = ({ count, increment }) => (
+  <div>
+    {!count && (
+      <div style={{ backgroundColor: 'green' }}>
+        <div style={{ backgroundColor: 'yellow' }}>
+          <p>Hello, count is undefined 😢</p>
         </div>
-      </>
+      </div>
     )}
-  />
+    {count && (
+      <div style={{ backgroundColor: 'red' }}>
+        <div style={{ backgroundColor: 'pink' }}>
+          <p>Hello Again, count is {count}</p>
+        </div>
+      </div>
+    )}
+    <button onClick={increment}>Increment</button>
+  </div>
 )
 
-Layout.propTypes = {
-  children: PropTypes.node.isRequired,
+Counter.propTypes = {
+  count: PropTypes.number.isRequired,
+  increment: PropTypes.func.isRequired,
 }
 
-export default Layout
+const mapStateToProps = ({ count }) => {
+  return { count }
+}
+
+const mapDispatchToProps = dispatch => {
+  return { increment: () => dispatch({ type: `INCREMENT` }) }
+}
+
+const ConnectedCounter = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Counter)
+
+class DefaultLayout extends React.Component {
+  render() {
+    return (
+      <div>
+        <Link to="/">
+          <h3>Redux example</h3>
+        </Link>
+        <ConnectedCounter />
+        {this.props.children}
+      </div>
+    )
+  }
+}
+
+export default DefaultLayout
